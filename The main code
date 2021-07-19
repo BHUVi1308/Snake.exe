@@ -1,0 +1,153 @@
+import pygame
+from pygame.locals import *
+import time
+import random
+ 
+pygame.init()
+
+#rgb values of different colours 
+white = (255, 255, 255)
+green = (19, 214, 58)
+black = (0, 0, 0)
+red = (213, 50, 80)
+
+ 
+pygame.display.set_caption('Snake.ExE')
+background = pygame.display.set_mode((700, 700))
+ 
+clock = pygame.time.Clock()
+ 
+snake_tile = 10
+ 
+normal_font = pygame.font.SysFont("chilanka", 26)
+score_font = pygame.font.SysFont("padaukbook", 37)
+Title_style = pygame.font.SysFont("texgyrebonummath", 100)
+
+ 
+def gameintro():
+
+    intro = True
+    while intro :
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    intro = False
+                if event.key == pygame.K_q:
+                    pygame.quit()
+                    quit()
+                    
+         
+        background.fill(black)
+        comm =  normal_font.render("Press p to Play", True, red)
+        background.blit(comm, [700/6, 700/2])
+        comm_b =  Title_style.render("Snake.exe", True, white)
+        background.blit(comm_b, [700/6, 700/3])
+        comm_c =  normal_font.render("Use Arrow keys to move the snake", True, red)
+        background.blit(comm_c, [700/6, 400])
+        pygame.display.update()
+        clock.tick(15)
+        
+ 
+ 
+def game():
+    game_over = False
+    game_close = False
+ 
+    snake_x = 350.0
+    snake_y= 350.0
+ 
+    changex = 0
+    changey = 0
+ 
+    snake_List = []
+    snakesize = 1
+    
+ 
+    mice_x = round(random.randrange(0, 700 - snake_tile)/10)*10.0
+    mice_y = round(random.randrange(0, 700 - snake_tile)/10)*10.0
+    while not game_over:
+        
+       
+ 
+        while game_close == True:
+            background.fill(black)
+            mesg = normal_font.render("Game Over!", True, red)
+            background.blit(mesg, [700/3, 700/6])
+            mesg1= normal_font.render("Press p to play again", True, red)
+            background.blit(mesg1, [700/3, 700/4])
+            mesg2= normal_font.render("Press q to quit", True, red)
+            background.blit(mesg2, [700/3, 700/3])
+            mesg3= normal_font.render("Developed by Bhuvanesh", True, red)
+            background.blit(mesg3, [700/3, 600])
+            value = Title_style.render("Score: " + str(snakesize-1), True, white)
+            background.blit(value, [150, 400])
+            pygame.display.update()
+ 
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        game_over = True
+                        game_close = False
+                    if event.key == pygame.K_p :
+                        game()
+                        pygame.display.update()
+ 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_over = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    changex = -snake_tile
+                    changey = 0
+                elif event.key == pygame.K_RIGHT:
+                    changex = snake_tile
+                    changey = 0
+                elif event.key == pygame.K_UP:
+                    changex = 0
+                    changey = -snake_tile
+                elif event.key == pygame.K_DOWN:
+                    changex = 0
+                    changey = snake_tile
+ 
+        if snake_x >= 700 or snake_x < 0 or snake_y >= 700 or snake_y < 0:
+            game_close = True
+        snake_x += changex
+        snake_y += changey
+        background.fill(black)
+        pygame.draw.circle(background, red, [mice_x, mice_y],5)
+        snake_Head = []
+        snake_Head.append(snake_x)
+        snake_Head.append(snake_y)
+        snake_List.append(snake_Head)
+        if len(snake_List) > snakesize:
+            del snake_List[0]
+ 
+        for x in snake_List[:-1]:
+            if x == snake_Head:
+                game_close = True
+ 
+    
+        for x in snake_List:
+            pygame.draw.rect(background, green, [x[0], x[1], snake_tile, snake_tile])
+    
+        value = score_font.render("Score: " + str(snakesize-1), True, white)
+        background.blit(value, [0, 0])
+    
+ 
+        pygame.display.update()
+ 
+        if snake_x == mice_x and snake_y == mice_y:
+            mice_x = round(random.randrange(0, 700 - snake_tile)/10.0)*10.0
+            mice_y = round(random.randrange(0, 700 - snake_tile)/10.0)*10.0
+            snakesize += 1
+ 
+        clock.tick(15)
+ 
+    pygame.quit()
+    quit()
+
+gameintro()
+game()
